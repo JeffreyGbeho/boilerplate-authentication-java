@@ -7,6 +7,7 @@
 - Oauth client
 - Java JWT (JJWT)
 - Data JPA
+- Spring validation
 - H2 database
 
 ## application.yml configuration

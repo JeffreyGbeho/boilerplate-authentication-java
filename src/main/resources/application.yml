@@ -1,1 +1,18 @@
-spring.application.name=auth
+spring:
+  application:
+    name: auth
+  datasource:
+    url: jdbc:h2:mem:authdb
+    username: user
+    password: password
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
