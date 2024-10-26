@@ -1,5 +1,6 @@
 package com.selfengineerjourney.auth.controller;
 
+import com.selfengineerjourney.auth.dto.LoginRequest;
 import com.selfengineerjourney.auth.dto.RegisterRequest;
 import com.selfengineerjourney.auth.dto.UserDto;
 import com.selfengineerjourney.auth.entity.User;
@@ -25,11 +26,22 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@Valid @RequestBody RegisterRequest request) {
         try {
-            log.info(" POST api/v1/auth/register - START");
+            log.info(" POST api/auth/register - START");
             User userCreated = authService.register(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.INSTANCE.toDto(userCreated));
         } finally {
-            log.info(" POST api/v1/auth/register - DONE");
+            log.info(" POST api/auth/register - DONE");
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserDto> register(@Valid @RequestBody LoginRequest request) {
+        try {
+            log.info(" POST api/auth/login - START");
+            User userAuthenticated = authService.authenticate(request);
+            return ResponseEntity.status(HttpStatus.OK).body(UserMapper.INSTANCE.toDto(userAuthenticated));
+        } finally {
+            log.info(" POST api/auth/login - DONE");
         }
     }
 }

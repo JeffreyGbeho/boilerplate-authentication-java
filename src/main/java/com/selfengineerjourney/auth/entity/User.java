@@ -63,17 +63,11 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName().toString())).toList();
+    }
+
+    public boolean isLocalProviderAuthentication() {
+        return this.provider.equalsIgnoreCase("local");
     }
 }

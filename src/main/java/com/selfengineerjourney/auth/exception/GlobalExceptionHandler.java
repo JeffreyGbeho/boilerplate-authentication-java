@@ -28,6 +28,19 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleUserNotFoundException(final UserNotFoundException ex, final WebRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ExceptionResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        LocalDateTime.now(),
+                        ex.getMessage(),
+                        ((ServletWebRequest) request).getRequest().getRequestURI(),
+                        null
+                )
+        );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handleValidationErrors(MethodArgumentNotValidException ex, WebRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(

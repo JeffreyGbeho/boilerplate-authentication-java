@@ -1,15 +1,19 @@
 package com.selfengineerjourney.auth.service.impl;
 
+import com.selfengineerjourney.auth.dto.LoginRequest;
 import com.selfengineerjourney.auth.dto.RegisterRequest;
 import com.selfengineerjourney.auth.entity.Role;
 import com.selfengineerjourney.auth.entity.RoleType;
 import com.selfengineerjourney.auth.entity.User;
 import com.selfengineerjourney.auth.exception.UserAlreadyExistsException;
+import com.selfengineerjourney.auth.exception.UserNotFoundException;
 import com.selfengineerjourney.auth.model.ValidationError;
 import com.selfengineerjourney.auth.repository.RoleRepository;
 import com.selfengineerjourney.auth.repository.UserRepository;
 import com.selfengineerjourney.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     public User register(RegisterRequest request) {
@@ -39,6 +44,7 @@ public class AuthServiceImpl implements AuthService {
                         .password(passwordEncoder.encode(request.password()))
                         .provider("local")
                         .roles(roles)
+                        .enabled(true)
                         .build()
         );
     }
@@ -56,5 +62,22 @@ public class AuthServiceImpl implements AuthService {
         if (!errors.isEmpty()) {
             throw new UserAlreadyExistsException(errors);
         }
+    }
+
+    @Override
+    public User authenticate(LoginRequest request) {
+        User user = userRepository.findByEmailOrUsername(request.username()).orElseThrow(() -> new UserNotFoundException("The user " + request.username() + " doesn't exist"));
+
+        if (!user.isLocalProviderAuthentication()) {
+            throw new UserNotFoundException("Credentials invalid");
+        }
+
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.username(), request.password()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return user;
     }
 }
