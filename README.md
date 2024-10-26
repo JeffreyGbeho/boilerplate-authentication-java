@@ -3,6 +3,7 @@
 ## Dependencies used
 - Spring web
 - Lombok
+- Mapstruct
 - Spring security
 - Oauth client
 - Java JWT (JJWT)
