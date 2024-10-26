@@ -15,6 +15,19 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> handleUserAlreadyExistsException(final UserAlreadyExistsException ex, final WebRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ExceptionResponse(
+                        HttpStatus.CONFLICT.value(),
+                        LocalDateTime.now(),
+                        ex.getMessage(),
+                        ((ServletWebRequest) request).getRequest().getRequestURI(),
+                        ex.hasValidationErrors() ? ex.getErrors() : null
+                )
+        );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handleValidationErrors(MethodArgumentNotValidException ex, WebRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
