@@ -26,7 +26,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                 authException.getMessage() != null ?
                         authException.getMessage() :
                         "Access unauthorized : Token JWT missing or invalid",
-                request.getRequestURI(),
+                request.getAttribute("originalUrl") != null ? (String) request.getAttribute("originalUrl") : request.getRequestURI(),
                 null
         );
 
