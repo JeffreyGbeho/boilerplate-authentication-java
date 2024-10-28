@@ -16,3 +16,8 @@ server:
   port: 8080
   servlet:
     context-path: /api
+
+app:
+  security:
+    access-token:
+      secret-key: "fEo++duKwfrb7kUw8i+6YSqm7CHHE5RxFtUASvCY+/I="

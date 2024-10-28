@@ -1,9 +1,11 @@
 package com.selfengineerjourney.auth.controller;
 
+import com.selfengineerjourney.auth.dto.JwtResponse;
 import com.selfengineerjourney.auth.dto.LoginRequest;
 import com.selfengineerjourney.auth.dto.RegisterRequest;
 import com.selfengineerjourney.auth.dto.UserDto;
 import com.selfengineerjourney.auth.entity.User;
+import com.selfengineerjourney.auth.security.jwt.JwtService;
 import com.selfengineerjourney.auth.service.AuthService;
 import com.selfengineerjourney.auth.utils.mapper.UserMapper;
 import jakarta.validation.Valid;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@Valid @RequestBody RegisterRequest request) {
@@ -35,11 +38,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDto> register(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<JwtResponse> register(@Valid @RequestBody LoginRequest request) {
         try {
             log.info(" POST api/auth/login - START");
             User userAuthenticated = authService.authenticate(request);
-            return ResponseEntity.status(HttpStatus.OK).body(UserMapper.INSTANCE.toDto(userAuthenticated));
+            JwtResponse response = jwtService.generateJwtToken(userAuthenticated);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } finally {
             log.info(" POST api/auth/login - DONE");
         }
