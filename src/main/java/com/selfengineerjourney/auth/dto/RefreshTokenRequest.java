@@ -1,7 +1,6 @@
 package com.selfengineerjourney.auth.dto;
 
-public record JwtResponse(
-        String accessToken,
+public record RefreshTokenRequest(
         String refreshToken
 ) {
 }

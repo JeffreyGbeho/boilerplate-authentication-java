@@ -15,6 +15,19 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(TokenInvalidException.class)
+    public ResponseEntity<ExceptionResponse> handleUserAlreadyExistsException(final TokenInvalidException ex, final WebRequest request) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ExceptionResponse(
+                        HttpStatus.UNAUTHORIZED.value(),
+                        LocalDateTime.now(),
+                        ex.getMessage(),
+                        ((ServletWebRequest) request).getRequest().getRequestURI(),
+                        null
+                )
+        );
+    }
+
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponse> handleUserAlreadyExistsException(final UserAlreadyExistsException ex, final WebRequest request) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(

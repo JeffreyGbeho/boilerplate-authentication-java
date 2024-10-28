@@ -1,9 +1,6 @@
 package com.selfengineerjourney.auth.controller;
 
-import com.selfengineerjourney.auth.dto.JwtResponse;
-import com.selfengineerjourney.auth.dto.LoginRequest;
-import com.selfengineerjourney.auth.dto.RegisterRequest;
-import com.selfengineerjourney.auth.dto.UserDto;
+import com.selfengineerjourney.auth.dto.*;
 import com.selfengineerjourney.auth.entity.User;
 import com.selfengineerjourney.auth.security.jwt.JwtService;
 import com.selfengineerjourney.auth.service.AuthService;
@@ -48,4 +45,17 @@ public class AuthController {
             log.info(" POST api/auth/login - DONE");
         }
     }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<JwtResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
+        try {
+            log.info("POST /api/v1/auth/refresh-token - START");
+            User userFromToken = authService.refreshToken(request.refreshToken());
+            JwtResponse response = jwtService.generateJwtToken(userFromToken);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } finally {
+            log.info("POST /api/v1/auth/refresh-token - DONE");
+        }
+    }
+
 }

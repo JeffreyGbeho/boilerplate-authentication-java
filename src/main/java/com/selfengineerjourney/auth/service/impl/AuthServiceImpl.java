@@ -5,11 +5,13 @@ import com.selfengineerjourney.auth.dto.RegisterRequest;
 import com.selfengineerjourney.auth.entity.Role;
 import com.selfengineerjourney.auth.entity.RoleType;
 import com.selfengineerjourney.auth.entity.User;
+import com.selfengineerjourney.auth.exception.TokenInvalidException;
 import com.selfengineerjourney.auth.exception.UserAlreadyExistsException;
 import com.selfengineerjourney.auth.exception.UserNotFoundException;
 import com.selfengineerjourney.auth.model.ValidationError;
 import com.selfengineerjourney.auth.repository.RoleRepository;
 import com.selfengineerjourney.auth.repository.UserRepository;
+import com.selfengineerjourney.auth.security.jwt.JwtService;
 import com.selfengineerjourney.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +31,7 @@ public class AuthServiceImpl implements AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     @Override
     public User register(RegisterRequest request) {
@@ -79,5 +82,16 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return user;
+    }
+
+    @Override
+    public User refreshToken(String refreshToken) {
+        if (jwtService.isExpired(refreshToken) || !jwtService.extractClaimValue(refreshToken, "typ").equals("Refresh")) {
+            throw new TokenInvalidException("Token invalid");
+        }
+
+        Long userId = Long.parseLong(jwtService.extractSubject(refreshToken));
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+
     }
 }
